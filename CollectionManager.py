@@ -7,8 +7,8 @@ import bpy
 
 
 class CollectionExpandedState(bpy.types.PropertyGroup):
-    name: bpy.props.StringProperty(name="Collection Name")
-    value: bpy.props.BoolProperty(name="Expanded", default=False)
+    name: bpy.props.StringProperty(name="Collection Name")  # type: ignore
+    value: bpy.props.BoolProperty(name="Expanded", default=False)  # type: ignore
 
 
 # ------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ class RENDER_MANAGER_OT_toggle_expand(bpy.types.Operator):
     bl_label = "Toggle Expand"
     bl_options = {"INTERNAL"}
 
-    collection_name: bpy.props.StringProperty()
+    collection_name: bpy.props.StringProperty()  # type: ignore
 
     def execute(self, context):
         current_state = get_expanded_state().get(self.collection_name, False)

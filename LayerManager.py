@@ -260,7 +260,7 @@ class RENDER_MANAGER_OT_switch_layer(bpy.types.Operator):
     bl_idname = "wm.switch_view_layer"
     bl_label = "Switch View Layer"
 
-    layer_index: bpy.props.IntProperty()
+    layer_index: bpy.props.IntProperty()  # type: ignore
 
     def execute(self, context):
         scene = context.scene
@@ -289,7 +289,7 @@ class RENDER_MANAGER_OT_reorder_view_layer(bpy.types.Operator):
             ("UP", "Up", "Up"),
             ("DOWN", "Down", "Down"),
         ]
-    )
+    )  # type: ignore
 
     def execute(self, context):
         scene = context.scene
@@ -324,7 +324,7 @@ class RENDER_MANAGER_OT_copy_layer_settings(bpy.types.Operator):
     bl_idname = "wm.copy_layer_settings"
     bl_label = "Copy Layer Settings"
 
-    layer_index: bpy.props.IntProperty()
+    layer_index: bpy.props.IntProperty()  # type: ignore
 
     def execute(self, context):
         scene = context.scene
@@ -344,7 +344,7 @@ class RENDER_MANAGER_OT_paste_layer_settings(bpy.types.Operator):
     bl_idname = "wm.paste_layer_settings"
     bl_label = "Paste Layer Settings"
 
-    layer_index: bpy.props.IntProperty()
+    layer_index: bpy.props.IntProperty()  # type: ignore
 
     def execute(self, context):
         global RENDER_MANAGER_CLIPBOARD
@@ -798,8 +798,8 @@ class RENDER_MANAGER_OT_create_render_nodes(bpy.types.Operator):
     def execute(self, context):
         # Check if the file has been saved
         if not bpy.data.is_saved:
-            self.report({'ERROR'}, "Please save the file first.")
-            return {'CANCELLED'}
+            self.report({"ERROR"}, "Please save the file first.")
+            return {"CANCELLED"}
         scene = context.scene
 
         # ✅ Ensure the compositor is enabled
@@ -1055,6 +1055,9 @@ class RENDER_MANAGER_OT_create_render_nodes(bpy.types.Operator):
             if scene.render_manager.denoise:
                 needs_cycles_denoising_data = True
                 needs_normal_data = False
+
+                if scene.render_manager.denoise_image:
+                    needs_normal_data = True
 
                 if scene.render_manager.denoise_diffuse:
                     vl.use_pass_diffuse_color = True
@@ -1389,10 +1392,12 @@ class RENDER_MANAGER_OT_create_render_nodes(bpy.types.Operator):
                                 color_node_image_input_name + " (Compositor Denoised)"
                             ),
                         )
-                        noisy_passes.append([
-                            per_layer_node.outputs["Noisy Image"],
-                            "Image",
-                        ])
+                        noisy_passes.append(
+                            [
+                                per_layer_node.outputs["Noisy Image"],
+                                "Image",
+                            ]
+                        )
                     else:
                         denoise_pass(
                             node_tree,
@@ -1470,7 +1475,6 @@ class RENDER_MANAGER_OT_create_render_nodes(bpy.types.Operator):
                     noisy_passes,
                 )
 
-
             denoise_node = None
             if scene.render_manager.denoise_light_groups:
                 denoise_light_groups(
@@ -1479,16 +1483,17 @@ class RENDER_MANAGER_OT_create_render_nodes(bpy.types.Operator):
                     layer_color_node,
                     x_pos + column_spacing + 300,
                     y_pos - 520,
-                    noisy_passes
+                    noisy_passes,
                 )
 
-            save_noisy_passes( scene, node_tree, noisy_passes, layer_color_node )
+            save_noisy_passes(scene, node_tree, noisy_passes, layer_color_node)
 
             try:
-                save_noisy_passes_separately( scene, node_tree, noisy_passes, layer_noisy_node )
+                save_noisy_passes_separately(
+                    scene, node_tree, noisy_passes, layer_noisy_node
+                )
             except:
-                1 # ignore, we have an edge case where no denoising options have been selected but the checkbox has been enabled
-
+                1  # ignore, we have an edge case where no denoising options have been selected but the checkbox has been enabled
 
             if scene.render_manager.backup_passes:
                 for pass_name in per_layer_node.outputs:
@@ -1522,97 +1527,97 @@ class RenderManagerSettings(bpy.types.PropertyGroup):
         name="Make Y Up",
         description="Enable to make the coordinate system for compatible with software that assumes Y is up (Currently does nothing)",
         default=False,
-    )
+    )  # type: ignore
 
     combine_diff_glossy: bpy.props.BoolProperty(
         name="Combine Diff/Glossy/Trans",
         description="Combine diff and glossy channels together",
         default=True,
-    )
+    )  # type: ignore
 
     denoise: bpy.props.BoolProperty(
         name="Enable",
         description="Enable per-pass denoising operations",
         default=True,
-    )
+    )  # type: ignore
 
     denoise_image: bpy.props.BoolProperty(
         name="Image",
         description="Denoises the image pass",
         default=True,
-    )
+    )  # type: ignore
 
     denoise_alpha: bpy.props.BoolProperty(
         name="Alpha",
         description="Denoises the alpha channel pass",
         default=False,
-    )
+    )  # type: ignore
 
     denoise_diffuse: bpy.props.BoolProperty(
         name="Diffuse",
         description="Denoises diffuse pass",
         default=True,
-    )
+    )  # type: ignore
 
     denoise_glossy: bpy.props.BoolProperty(
         name="Glossy",
         description="Denoises glossy pass",
         default=True,
-    )
+    )  # type: ignore
 
     denoise_transmission: bpy.props.BoolProperty(
         name="Transmission",
         description="Denoises transparent pass",
         default=True,
-    )
+    )  # type: ignore
 
     denoise_volumedir: bpy.props.BoolProperty(
         name="Volume Direct",
         description="Denoises Direct Volumetrics",
         default=False,
-    )
+    )  # type: ignore
 
     denoise_volumeind: bpy.props.BoolProperty(
         name="Volume Indirect",
         description="Denoises Indirect Volumetrics",
         default=False,
-    )
+    )  # type: ignore
 
     denoise_shadow_catcher: bpy.props.BoolProperty(
         name="Shadow Catcher",
         description="Denoises shadow catcher pass",
         default=False,
-    )
+    )  # type: ignore
 
     denoise_light_groups: bpy.props.BoolProperty(
         name="Light Groups",
         description="Denoises light group passes",
         default=False,
-    )
+    )  # type: ignore
 
     save_noisy_in_file: bpy.props.BoolProperty(
         name="Embed Noisy Passes",
         description="Keeps the noisy passes as a backup in the same file",
         default=False,
-    )
+    )  # type: ignore
 
     save_noisy_separately: bpy.props.BoolProperty(
         name="Save Noisy Passes Separately",
         description="Keeps the noisy passes as a backup a separate file",
         default=False,
-    )
+    )  # type: ignore
 
     backup_passes: bpy.props.BoolProperty(
         description="Save a full copy of the unmodified passes into a separate file",
         name="Original Passes (32bit Only)",
         default=False,
-    )
+    )  # type: ignore
 
     color_depth_override: bpy.props.EnumProperty(
         items=color_depth_options,
         description="Use the color depth configured in the OpenEXR output settings",
         name="Color Depth",
-    )
+    )  # type: ignore
 
 
 classes = (
@@ -1725,6 +1730,7 @@ def a_denoising_operation_is_checked(scene):
     else:
         return False
 
+
 def denoise_light_groups(
     node_tree,
     per_layer_node,
@@ -1733,11 +1739,13 @@ def denoise_light_groups(
     y_pos,
     noisy_passes,
 ):
-# cycle through the render layers looking for output nodes that start with Combined_
-#	call denoise_pass for the light group
+    # cycle through the render layers looking for output nodes that start with Combined_
+    # 	call denoise_pass for the light group
     ypos_offset = 0
-    for pass_name in per_layer_node.outputs:    
-        if bool(re.search("^Combined_.+", pass_name.name)):	# returns true if Combined_ is at the start of the pass name
+    for pass_name in per_layer_node.outputs:
+        if bool(
+            re.search("^Combined_.+", pass_name.name)
+        ):  # returns true if Combined_ is at the start of the pass name
             denoise_pass(
                 node_tree,
                 pass_name.name,
@@ -1750,7 +1758,6 @@ def denoise_light_groups(
                 noisy_passes,
             )
             ypos_offset -= 40
-
 
 
 def save_noisy_passes(
@@ -1769,16 +1776,8 @@ def save_noisy_passes(
             )
 
 
-def save_noisy_passes_separately(
-    scene,
-    node_tree,
-    noisy_passes,
-    layer_noisy_node
-):
-    if (
-        scene.render_manager.save_noisy_separately
-        and scene.render_manager.denoise
-    ):
+def save_noisy_passes_separately(scene, node_tree, noisy_passes, layer_noisy_node):
+    if scene.render_manager.save_noisy_separately and scene.render_manager.denoise:
         for noisy_pass_array in noisy_passes:
             noisy_pass = noisy_pass_array[0]
             noisy_name = "Noisy " + noisy_pass_array[1]
@@ -1786,7 +1785,6 @@ def save_noisy_passes_separately(
                 noisy_pass,
                 layer_noisy_node.layer_slots.new(noisy_name),
             )
-
 
 
 def unregister():
@@ -1798,4 +1796,3 @@ def unregister():
 
 if __name__ == "__main__":
     register()
-
